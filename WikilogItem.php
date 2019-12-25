@@ -239,7 +239,7 @@ class WikilogItem
 
 		$langCode = $item->mTitle->getPageLanguage()->getCode();
 		if ( strlen($langCode) != 0 && strcmp($langCode, "en") !== 0 ) {
-			$dbr = wfGetDB( DB_SLAVE );
+			$dbr = wfGetDB( DB_REPLICA );
 			$displayTitle = $dbr->selectField(
 				'page_props',
 				'pp_value',
@@ -258,7 +258,7 @@ class WikilogItem
 	 * @return New WikilogItem object, or NULL if article doesn't exist.
 	 */
 	public static function newFromID( $id ) {
-		$dbr = wfGetDB( DB_SLAVE );
+		$dbr = wfGetDB( DB_REPLICA );
 		$row = self::loadFromID( $dbr, $id );
 		if ( $row ) {
 			return self::newFromRow( $row );
@@ -318,7 +318,7 @@ class WikilogItem
 	 * of WikilogItem.
 	 */
 	public static function selectTables( $dbr = null ) {
-		if ( !$dbr ) $dbr = wfGetDB( DB_SLAVE );
+		if ( !$dbr ) $dbr = wfGetDB( DB_REPLICA );
 		$page = $dbr->tableName( 'page' );
 		return array(
 			'tables' => array(
