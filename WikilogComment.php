@@ -26,6 +26,8 @@
  * @author Juliano F. Ravasi < dev juliano info >
  */
 
+use MediaWiki\MediaWikiServices;
+
 if ( !defined( 'MEDIAWIKI' ) )
 	die();
 
@@ -323,6 +325,7 @@ class WikilogComment
 		// $to_ids = array( <userid> => array( 'email' => <string>, 'can_unsubscribe' => <boolean> ), ... )
 		$to_ids = array();
 		$email_auth = "AND user_email!='' AND user_email_authenticated IS NOT NULL";
+		$namespaceInfo = MediaWikiServices::getInstance()->getNamespaceInfo();
 		$result = $dbr->query(
 			// Notify users subscribed to this post
 			"SELECT ws_user user_id, user_email, 1 can_unsubscribe FROM $s".
@@ -339,7 +342,7 @@ class WikilogComment
 			" SELECT wl_user user_id, user_email, 1 can_unsubscribe FROM $w".
 			" INNER JOIN $u ON user_id=wl_user $email_auth".
 			" LEFT JOIN $s s2 ON s2.ws_user=wl_user AND s2.ws_page=$id AND s2.ws_yes=0".
-			" WHERE wl_namespace=".MWNamespace::getTalk( $this->mSubject->getNamespace() ).
+			" WHERE wl_namespace=".$namespaceInfo->getTalk( $this->mSubject->getNamespace() ).
 			" AND wl_title=".$dbr->addQuotes( $this->mSubject->getDBkey() )." AND s2.ws_user IS NULL".
 			// Notify users subscribed to all blogs via user preference
 			// and not unsubscribed from this post and not unsubscribed from this blog,
@@ -485,9 +488,10 @@ class WikilogComment
 		} elseif ( $this->mCommentPage ) {
 			return Title::newFromID( $this->mCommentPage, Title::GAID_FOR_UPDATE );
 		} else {
+			$namespaceInfo = MediaWikiServices::getInstance()->getNamespaceInfo();
 			$it = $this->mSubject;
 			$title = Title::makeTitle(
-				MWNamespace::getTalk( $it->getNamespace() ),
+				$namespaceInfo->getTalk( $it->getNamespace() ),
 				$it->getText() . '/c' . self::padID( $this->mID )
 			);
 			if ( $forCreation && $title->exists() ) {
@@ -601,7 +605,8 @@ class WikilogComment
 	 * @param string|NULL $anonName Name of anonymous user who did post that comment
 	 */
 	public static function newFromCreatedPage( Title $title, $parent, $anonName ) {
-		$subject = Title::makeTitle( MWNamespace::getSubject( $title->getNamespace() ), $title->getBaseText() );
+		$namespaceInfo = MediaWikiServices::getInstance()->getNamespaceInfo();
+		$subject = Title::makeTitle( $namespaceInfo->getSubject( $title->getNamespace() ), $title->getBaseText() );
 		if ( $parent && !$parent instanceof Title ) {
 			$parentTitle = Title::newFromText( $parent, $title->getNamespace() );
 		} else {

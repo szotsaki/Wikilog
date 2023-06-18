@@ -26,6 +26,8 @@
  * @author Juliano F. Ravasi < dev juliano info >
  */
 
+use MediaWiki\MediaWikiServices;
+
 if ( !defined( 'MEDIAWIKI' ) )
 	die();
 
@@ -518,8 +520,9 @@ class WikilogHooks
 		global $wgWikilogNamespaces;
 		static $talk = array();
 		if( !$talk ) {
+			$namespaceInfo = MediaWikiServices::getInstance()->getNamespaceInfo();
 			foreach( $wgWikilogNamespaces as $ns ) {
-				$talk[ MWNamespace::getTalk( $ns ) ] = true;
+				$talk[ $namespaceInfo->getTalk( $ns ) ] = true;
 			}
 		}
 		if( isset( $talk[ $title->getNamespace() ] ) &&

@@ -26,6 +26,8 @@
  * @author Juliano F. Ravasi < dev juliano info >
  */
 
+use MediaWiki\MediaWikiServices;
+
 if ( !defined( 'MEDIAWIKI' ) )
 	die();
 
@@ -377,8 +379,9 @@ class Wikilog
 	 */
 	static function ArticleViewFooter( $article, $patrolFooterShown ) {
 		global $wgWikilogCommentsOnItemPage;
+		$namespaceInfo = MediaWikiServices::getInstance()->getNamespaceInfo();
 		$ns = $article->getTitle()->getNamespace();
-		if ( !MWNamespace::isTalk( $ns ) && !( $article instanceof WikilogMainPage ) &&
+		if ( !$namespaceInfo->isTalk( $ns ) && !( $article instanceof WikilogMainPage ) &&
 			( $wgWikilogCommentsOnItemPage === true || isset( $wgWikilogCommentsOnItemPage[$ns] ) ) ) {
 			$talk = $article->getTitle()->getTalkPage();
 			$comments = WikilogCommentsPage::createInstance( $talk );
@@ -513,7 +516,8 @@ class Wikilog
 			return null;
 		}
 
-		$ns = MWNamespace::getSubject( $title->getNamespace() );
+		$namespaceInfo = MediaWikiServices::getInstance()->getNamespaceInfo();
+		$ns = $namespaceInfo->getSubject( $title->getNamespace() );
 		if ( in_array( $ns, $wgWikilogNamespaces ) ) {
 			$wi = new WikilogInfo( $title );
 			if ( $wi->mWikilogName ) {
@@ -528,7 +532,8 @@ class Wikilog
 	 */
 	public static function nsHasComments( $title ) {
 		global $wgWikilogCommentNamespaces;
-		$ns = MWNamespace::getTalk( $title->getNamespace() );
+		$namespaceInfo = MediaWikiServices::getInstance()->getNamespaceInfo();
+		$ns = $namespaceInfo->getTalk( $title->getNamespace() );
 		return $wgWikilogCommentNamespaces === true || isset( $wgWikilogCommentNamespaces[$ns] );
 	}
 }
@@ -556,9 +561,10 @@ class WikilogInfo
 	 */
 	function __construct( $title ) {
 		$origns = $title->getNamespace();
-		$this->mIsTalk = MWNamespace::isTalk( $origns );
-		$ns = MWNamespace::getSubject( $origns );
-		$tns = MWNamespace::getTalk( $origns );
+		$namespaceInfo = MediaWikiServices::getInstance()->getNamespaceInfo();
+		$this->mIsTalk = $namespaceInfo->isTalk( $origns );
+		$ns = $namespaceInfo->getSubject( $origns );
+		$tns = $namespaceInfo->getTalk( $origns );
 
 		$parts = explode( '/', $title->getText() );
 		if ( count( $parts ) > 1 && ( $this->mIsTalk || count( $parts ) == 2 ) ) {
