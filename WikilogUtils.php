@@ -248,21 +248,16 @@ class WikilogUtils {
 
 		$newparser->firstCallInit();
 
-		$th_diff = array_diff_key( $wgParser->mTagHooks, $newparser->mTagHooks );
-		$tt_diff = array_diff_key( $wgParser->mTransparentTagHooks, $newparser->mTransparentTagHooks );
-		$fh_diff = array_diff_key( $wgParser->mFunctionHooks, $newparser->mFunctionHooks );
+		$th_diff = array_diff_key( $wgParser->getTags(), $newparser->getTags() );
+		$fh_diff = array_diff_key( $wgParser->getFunctionHooks(), $newparser->getFunctionHooks() );
 
-		if ( !empty( $th_diff ) || !empty( $tt_diff ) || !empty( $fh_diff ) ) {
+		if ( !empty( $th_diff ) || !empty( $fh_diff ) ) {
 			wfDebug( "*** Wikilog WARNING: Detected broken extensions installed. "
 				  . "A second instance of the parser is not properly initialized. "
 				  . "The following hooks are missing:\n" );
 			if ( !empty( $th_diff ) ) {
 				$hooks = implode( ', ', array_keys( $th_diff ) );
 				wfDebug( "***    Tag hooks: $hooks.\n" );
-			}
-			if ( !empty( $tt_diff ) ) {
-				$hooks = implode( ', ', array_keys( $tt_diff ) );
-				wfDebug( "***    Transparent tag hooks: $hooks.\n" );
 			}
 			if ( !empty( $fh_diff ) ) {
 				$hooks = implode( ', ', array_keys( $fh_diff ) );
