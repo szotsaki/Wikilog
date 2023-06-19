@@ -167,7 +167,7 @@ class WikilogUtils {
 		$useParserCache = $wgEnableParserCache &&
 			intval( $wgUser->getOption( 'stubthreshold' ) ) == 0 &&
 			$article->exists();
-		$parserCache = ParserCache::singleton();
+		$parserCache = MediaWikiServices::getInstance()->getParserCache();
 
 		# Parser options.
 		$parserOpt = ParserOptions::newFromUser( $wgUser );
