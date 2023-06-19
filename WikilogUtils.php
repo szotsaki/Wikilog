@@ -279,14 +279,13 @@ class WikilogUtils {
 	 * @return Wikitext-formatted textual list of authors.
 	 */
 	public static function authorList( $list ) {
-		global $wgContLang;
-
 		if ( is_string( $list ) ) {
 			return self::authorSig( $list );
 		}
 		elseif ( is_array( $list ) ) {
 			$authors = array_map( array( __CLASS__, 'authorSig' ), $list );
-			return $wgContLang->listToText( $authors );
+			$contLang = MediaWikiServices::getInstance()->getContentLanguage();
+			return $contLang->listToText( $authors );
 		}
 		else {
 			return '';
@@ -326,8 +325,8 @@ class WikilogUtils {
 	 * @return Wikitext-formatted textual list of categories.
 	 */
 	public static function categoryList( $list ) {
-		global $wgContLang;
-		$special = $wgContLang->specialPage( 'Wikilog' );
+		$contLang = MediaWikiServices::getInstance()->getContentLanguage();
+		$special = $contLang->specialPage( 'Wikilog' );
 		$categories = array();
 		foreach ( $list as $cat ) {
 			$title = Title::makeTitle( NS_CATEGORY, $cat );
@@ -335,7 +334,7 @@ class WikilogUtils {
 			$categoryTxt = $title->getText();
 			$categories[] = "[[{$special}/{$categoryUrl}|{$categoryTxt}]]";
 		}
-		return $wgContLang->listToText( $categories );
+		return $contLang->listToText( $categories );
 	}
 
 	/**
@@ -347,13 +346,13 @@ class WikilogUtils {
 	 * @return Wikitext-formatted textual list of tags.
 	 */
 	public static function tagList( $list ) {
-		global $wgContLang;
-		$special = $wgContLang->specialPage( 'Wikilog' );
+		$contLang = MediaWikiServices::getInstance()->getContentLanguage();
+		$special = $contLang->specialPage( 'Wikilog' );
 		$tags = array();
 		foreach ( $list as $tag ) {
 			$tags[] = "[[{$special}/t={$tag}|{$tag}]]";
 		}
-		return $wgContLang->listToText( $tags );
+		return $contLang->listToText( $tags );
 	}
 
 	/**

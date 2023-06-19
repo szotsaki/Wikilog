@@ -387,9 +387,8 @@ class SpecialWikilog
 	 * @return HTML of the query form.
 	 */
 	protected function getQueryForm( FormOptions $opts ) {
-		global $wgContLang;
-
-		$align = $wgContLang->isRtl() ? 'left' : 'right';
+		$contLang = MediaWikiServices::getInstance()->getContentLanguage();
+		$align = $contLang->isRtl() ? 'left' : 'right';
 		$fields = $this->getQueryFormFields( $opts );
 		$columns = array_chunk( $fields, ( count( $fields ) + 1 ) / 2, true );
 

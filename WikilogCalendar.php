@@ -4,6 +4,8 @@
 # Календарь для расширения Wikilog
 # Copyright (c) Vitaliy Filippov, 2010+
 
+use MediaWiki\MediaWikiServices;
+
 class WikilogCalendar
 {
     /* Weekday number (0-6) for the given UNIX time */
@@ -31,8 +33,8 @@ class WikilogCalendar
     /* Month and year name */
     static function monthName($month)
     {
-        global $wgContLang;
-        return $wgContLang->getMonthName(0+substr($month, 4, 2)).' '.substr($month, 0, 4);
+        $contLang = MediaWikiServices::getInstance()->getContentLanguage();
+        return $contLang->getMonthName(0+substr($month, 4, 2)).' '.substr($month, 0, 4);
     }
     /* Make HTML code for a multiple month calendar */
     static function makeCalendar($dates, $pager)

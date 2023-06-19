@@ -21,6 +21,8 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+use MediaWiki\MediaWikiServices;
+
 if ( !defined( 'MEDIAWIKI' ) )
     die();
 
@@ -320,7 +322,7 @@ END_STRING;
     }
 
     public static function sendEmails( &$article, $text ) {
-        global $wgUser, $wgPasswordSender, $wgServer, $wgContLang;
+        global $wgUser, $wgPasswordSender, $wgServer;
 
         $dbr = wfGetDB( DB_REPLICA );
 
@@ -356,7 +358,8 @@ END_STRING;
         $emails = array();
         foreach ( $res as $row ) {
             if ( !$row->user_language ) {
-                $row->user_language = $wgContLang->getCode();
+                $contLang = MediaWikiServices::getInstance()->getContentLanguage();
+                $row->user_language = $contLang->getCode();
             }
             $user = User::newFromRow( $row );
             if ( $user && $user->getEmail() && $user->getEmailAuthenticationTimestamp() &&

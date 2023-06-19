@@ -4,6 +4,8 @@
 # License: GPL v2 or later
 # Copyright (c) 2010 Vitaliy Filippov
 
+use MediaWiki\MediaWikiServices;
+
 class WikilogBloggerImport
 {
     static function parse_blogger_xml($str, $params = array())
@@ -12,11 +14,11 @@ class WikilogBloggerImport
         $comment_ai = $dbw->selectField('wikilog_comments', 'MAX(wlc_id)', '1')+1;
 
         /* Default parameter values */
-        global $wgContLang;
+        $contLang = MediaWikiServices::getInstance()->getContentLanguage();
         $params += array(
             'blog' => '',
-            'ns_blog' => $wgContLang->getNsText(NS_BLOG & ~1),
-            'ns_blog_talk' => $wgContLang->getNsText(NS_BLOG | 1),
+            'ns_blog' => $contLang->getNsText(NS_BLOG & ~1),
+            'ns_blog_talk' => $contLang->getNsText(NS_BLOG | 1),
             'users' => array(),
         );
 

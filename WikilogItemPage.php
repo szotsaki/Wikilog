@@ -74,7 +74,7 @@ class WikilogItemPage
 	 * View page action handler.
 	 */
 	public function view() {
-		global $wgOut, $wgUser, $wgContLang, $wgFeed, $wgWikilogFeedClasses;
+		global $wgOut, $wgUser, $wgFeed, $wgWikilogFeedClasses;
 
 		# Get skin
 		$skin = $this->getContext()->getSkin();

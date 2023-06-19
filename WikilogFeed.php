@@ -26,6 +26,8 @@
  * @author Juliano F. Ravasi < dev juliano info >
  */
 
+use MediaWiki\MediaWikiServices;
+
 if ( !defined( 'MEDIAWIKI' ) )
 	die();
 
@@ -392,9 +394,10 @@ class WikilogItemFeed
 	 */
 	protected function getNamespaceFeedObject( $ns ) {
 		global $wgWikilogFeedClasses, $wgFavicon, $wgLogo;
-		global $wgContLang, $wgContLanguageCode;
-
-		$title = wfMessage( 'wikilog-feed-ns-title', $wgContLang->getFormattedNsText( $ns ) )->inContentLanguage()->text();
+		global $wgContLanguageCode;
+		
+		$contLang = MediaWikiServices::getInstance()->getContentLanguage();
+		$title = wfMessage( 'wikilog-feed-ns-title', $contLang->getFormattedNsText( $ns ) )->inContentLanguage()->text();
 		$subtitle = wfMessage( 'wikilog-feed-description' )->inContentLanguage()->parse();
 
 		$updated = $this->mDb->selectField(

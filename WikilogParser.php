@@ -342,9 +342,9 @@ class WikilogParser
 	public static function info( $parser, $id /*, $tag... */ ) {
 		global $wgWikilogNamespaces, $wgWikilogEnableTags;
 		global $wgWikilogEnableComments;
-		global $wgContLang;
 
 		$args = array_slice( func_get_args(), 2 );
+		$contLang = MediaWikiServices::getInstance()->getContentLanguage();
 
 		switch ( $id ) {
 			case 'num-namespaces':
@@ -352,12 +352,12 @@ class WikilogParser
 			case 'all-namespaces':
 				$namespaces = array();
 				foreach ( $wgWikilogNamespaces as $ns )
-					$namespaces[] = $wgContLang->getFormattedNsText( $ns );
-				return $wgContLang->listToText( $namespaces );
+					$namespaces[] = $contLang->getFormattedNsText( $ns );
+				return $contLang->listToText( $namespaces );
 			case 'namespace-by-index':
 				$index = empty( $args ) ? 0 : intval( array_shift( $args ) );
 				if ( isset( $wgWikilogNamespaces[$index] ) ) {
-					return $wgContLang->getFormattedNsText( $wgWikilogNamespaces[$index] );
+					return $contLang->getFormattedNsText( $wgWikilogNamespaces[$index] );
 				} else {
 					return '';
 				}
