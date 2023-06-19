@@ -171,7 +171,6 @@ class WikilogUtils {
 
 		# Parser options.
 		$parserOpt = ParserOptions::newFromUser( $wgUser );
-		$parserOpt->setTidy( true );
 		if ( $feed ) {
 			$parserOpt->setEditSection( false );
 
