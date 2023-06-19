@@ -62,13 +62,13 @@ class WikilogMainPage
 	public function view() {
 		global $wgRequest, $wgOut, $wgMimeType, $wgUser;
 
-		$query = new WikilogItemQuery( $this->mTitle );
+		$query = new WikilogItemQuery( $this->getTitle() );
 		$query->setPubStatus( $wgRequest->getVal( 'show' ) );
 
 		# RSS or Atom feed requested. Ignore all other options.
 		if ( ( $feedFormat = $wgRequest->getVal( 'feed' ) ) ) {
 			global $wgWikilogNumArticles;
-			$feed = new WikilogItemFeed( $this->mTitle, $feedFormat, $query,
+			$feed = new WikilogItemFeed( $this->getTitle(), $feedFormat, $query,
 				$wgRequest->getInt( 'limit', $wgWikilogNumArticles ) );
 			return $feed->execute();
 		}
@@ -91,7 +91,7 @@ class WikilogMainPage
 
 		# Subscription
 		if ( !$wgUser->isAnon() ) {
-			$link = SpecialWikilogSubscriptions::generateSubscriptionLink( $this->mTitle );
+			$link = SpecialWikilogSubscriptions::generateSubscriptionLink( $this->getTitle() );
 			$wgOut->addHtml( '<p id="wl-subscription-link">' . $link . '</p>' );
 		}
 
@@ -128,7 +128,7 @@ class WikilogMainPage
 				$altquery = wfArrayToCGI( array( 'view' => $alt ), $qarr );
 				$wgOut->addLink( array(
 					'rel' => 'alternate',
-					'href' => $this->mTitle->getLocalURL( $altquery ),
+					'href' => $this->getTitle()->getLocalURL( $altquery ),
 					'type' => $wgMimeType,
 					'title' => wfMessage( "wikilog-view-{$alt}" )->inContentLanguage()->text()
 				) );
@@ -142,22 +142,22 @@ class WikilogMainPage
 	public function wikilog() {
 		global $wgUser, $wgOut, $wgRequest;
 
-		if ( $this->mTitle->exists() && $wgRequest->getBool( 'wlActionImport' ) ) {
+		if ( $this->getTitle()->exists() && $wgRequest->getBool( 'wlActionImport' ) ) {
 			return $this->actionImport();
 		}
 
 		$wgOut->setPageTitle( wfMessage( 'wikilog-tab-title' )->text() );
 		$wgOut->setRobotpolicy( 'noindex,nofollow' );
 
-		if ( $this->mTitle->exists() ) {
+		if ( $this->getTitle()->exists() ) {
 			$skin = $this->getContext()->getSkin();
 			$wgOut->addHTML( $this->formatWikilogDescription( $skin ) );
 			$wgOut->addHTML( $this->formatWikilogInformation( $skin ) );
-			if ( $this->mTitle->quickUserCan( 'edit' ) ) {
-				$wgOut->addHTML( self::formNewItem( $this->mTitle ) );
+			if ( $this->getTitle()->quickUserCan( 'edit' ) ) {
+				$wgOut->addHTML( self::formNewItem( $this->getTitle() ) );
 				$wgOut->addHTML( $this->formImport() );
 			}
-		} elseif ( $this->mTitle->userCan( 'create' ) ) {
+		} elseif ( $this->getTitle()->userCan( 'create' ) ) {
 			$text = wfMessage( 'wikilog-missing-wikilog' )->parse();
 			$text = WikilogUtils::wrapDiv( 'noarticletext', $text );
 			$wgOut->addHTML( $text );
@@ -182,7 +182,7 @@ class WikilogMainPage
 			);
 		}
 		$s .= Xml::tags( 'div', array( 'class' => 'wl-title' ),
-			Linker::link( $this->mTitle, null, array(), array(), array( 'known', 'noclasses' ) ) );
+			Linker::link( $this->getTitle(), null, array(), array(), array( 'known', 'noclasses' ) ) );
 
 		$st =& $this->mWikilogSubtitle;
 		if ( is_array( $st ) ) {
@@ -206,7 +206,7 @@ class WikilogMainPage
 			'COUNT(*) as total, SUM(wlp_publish) as published',
 			array(
 				'wlp_page = page_id',
-				'wlp_parent' => $this->mTitle->getArticleID(),
+				'wlp_parent' => $this->getTitle()->getArticleID(),
 				'page_is_redirect' => 0
 			),
 			__METHOD__
@@ -231,7 +231,7 @@ class WikilogMainPage
 		global $wgWikilogFeedClasses;
 
 		// Uses messages 'wikilog-post-count-published', 'wikilog-post-count-drafts', 'wikilog-post-count-all'
-		$s = Linker::link( $this->mTitle,
+		$s = Linker::link( $this->getTitle(),
 			wfMessage( "wikilog-post-count-{$type}", $num )->text(),
 			array(),
 			array( 'view' => "archives", 'show' => $type ),
@@ -240,7 +240,7 @@ class WikilogMainPage
 		if ( !empty( $wgWikilogFeedClasses ) ) {
 			$f = array();
 			foreach ( $wgWikilogFeedClasses as $format => $class ) {
-				$f[] = Linker::link( $this->mTitle,
+				$f[] = Linker::link( $this->getTitle(),
 					wfMessage( "feed-{$format}" )->text(),
 					array( 'class' => "feedlink", 'type' => "application/{$format}+xml" ),
 					array( 'view' => "archives", 'show' => $type, 'feed' => $format ),
@@ -324,7 +324,7 @@ class WikilogMainPage
 		global $wgScript;
 
 		$fields = array();
-		$fields[] = Html::hidden( 'title', $this->mTitle->getPrefixedText() );
+		$fields[] = Html::hidden( 'title', $this->getTitle()->getPrefixedText() );
 		$fields[] = Html::hidden( 'action', 'wikilog' );
 		$fields[] = Html::hidden( 'wikilog-import', 'blogger' );
 		$fields[] = Xml::inputLabel( wfMessage( 'wikilog-import-file' )->text(), 'wlFile', 'wl-import-file', false, false, array('type' => 'file') );
@@ -348,7 +348,7 @@ class WikilogMainPage
 		global $wgOut, $wgRequest;
 		$wgOut->setPageTitle( wfMessage( 'wikilog-import' )->text() );
 
-		if ( !$this->mTitle->quickUserCan( 'edit' ) ) {
+		if ( !$this->getTitle()->quickUserCan( 'edit' ) ) {
 			$wgOut->loginToUse();
 			$wgOut->output();
 			exit;
@@ -380,7 +380,7 @@ class WikilogMainPage
 				    ( $user = User::newFromName( $user->getText() ) ))
 					$users[ trim($m[2]) ] = $user->getName();
 			$params = array(
-				'blog' => $this->mTitle->getText(),
+				'blog' => $this->getTitle()->getText(),
 				'users' => $users,
 			);
 			$out = WikilogBloggerImport::parse_blogger_xml( file_get_contents( $_FILES['wlFile']['tmp_name'] ), $params );
@@ -388,7 +388,7 @@ class WikilogMainPage
 				$result = WikilogBloggerImport::import_parsed_blogger( $out );
 			if ( $result )
 			{
-				$wgOut->addWikiMsg( 'wikilog-import-ok', count( $result ), $this->mTitle->getPrefixedText() );
+				$wgOut->addWikiMsg( 'wikilog-import-ok', count( $result ), $this->getTitle()->getPrefixedText() );
 				/* Print RewriteRules */
 				$rewrite = array_reverse( $out['rewrite'] );
 				foreach ( $rewrite as &$r )

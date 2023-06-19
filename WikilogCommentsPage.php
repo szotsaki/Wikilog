@@ -227,7 +227,7 @@ class WikilogCommentsPage
 			# RSS or Atom feed requested. Ignore all other options.
 			global $wgWikilogNumComments;
 			$query->setModStatus( WikilogCommentQuery::MS_ACCEPTED );
-			$feed = new WikilogCommentFeed( $this->mTitle, $feedFormat, $query,
+			$feed = new WikilogCommentFeed( $this->getTitle(), $feedFormat, $query,
 				$wgRequest->getInt( 'limit', $wgWikilogNumComments ) );
 			return $feed->execute();
 		}
@@ -633,7 +633,7 @@ class WikilogCommentsPage
 			} else {
 				$wgOut->showFatalError( wfMessage( 'cannotdelete' )->parse() );
 				$wgOut->addHTML( Xml::element( 'h2', null, LogPage::logName( 'delete' ) ) );
-				LogEventsList::showLogExtract( $wgOut, 'delete', $this->mTitle->getPrefixedText() );
+				LogEventsList::showLogExtract( $wgOut, 'delete', $this->getTitle()->getPrefixedText() );
 			}
 		} else {
 			$wgOut->showErrorPage( 'nosuchaction', 'nosuchactiontext' );
@@ -676,7 +676,7 @@ class WikilogCommentsPage
 		# Check through captcha.
 		if ( !WlCaptcha::confirmEdit( $this->getTitle(), $comment->getText() ) ) {
 			$this->mCaptchaForm = WlCaptcha::getCaptchaForm();
-			$wgOut->setPageTitle( $this->mTitle->getPrefixedText() );
+			$wgOut->setPageTitle( $this->getTitle()->getPrefixedText() );
 			$wgOut->setRobotPolicy( 'noindex,nofollow' );
 			$wgOut->addHtml( $this->getPostCommentForm( $comment->mParent ) );
 			return;

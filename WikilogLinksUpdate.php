@@ -39,7 +39,7 @@ class WikilogLinksUpdate
 
 	function __construct( &$lupd, $parserOutput ) {
 		$this->mId = $lupd->mId;
-		$this->mTitle = $lupd->mTitle;
+		$this->mTitle = $lupd->getTitle();
 		$this->mDb = wfGetDB( DB_MASTER );
 		$this->mAuthors = $parserOutput->getAuthors();
 		$this->mTags = $parserOutput->getTags();
@@ -47,7 +47,7 @@ class WikilogLinksUpdate
 
 	function doUpdate() {
 		global $wgUseDumbLinkUpdate;
-		
+
 		if ( $wgUseDumbLinkUpdate ) {
 			$this->doDumbUpdate();
 		} else {
@@ -97,7 +97,7 @@ class WikilogLinksUpdate
 			$this->mDb->insert( $table, $insertions, __METHOD__, 'IGNORE' );
 		}
 	}
-	
+
 	private function getAuthorInsertions( $existing = array() ) {
 		$arr = array();
 		$diffs = array_diff_key( $this->mAuthors, $existing );
@@ -158,7 +158,7 @@ class WikilogLinksUpdate
 	 */
 	static function LinksUpdate( $lupd ) {
 		if ( isset( $lupd->mParserOutput->mExtWikilog ) &&
-			 Wikilog::getWikilogInfo( $lupd->mTitle ) ) {
+			 Wikilog::getWikilogInfo( $lupd->getTitle() ) ) {
 			$u = new WikilogLinksUpdate( $lupd, $lupd->mParserOutput->mExtWikilog );
 			$u->doUpdate();
 		}

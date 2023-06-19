@@ -326,7 +326,7 @@ class WikilogHooks
 	 * Adds wikilog article options to edit pages.
 	 */
 	static function EditPageEditFormFields( $editpage, $output ) {
-		$wi = Wikilog::getWikilogInfo( $editpage->mTitle );
+		$wi = Wikilog::getWikilogInfo( $editpage->getTitle() );
 		if ( $wi && $wi->isItem() && !$wi->isTalk() ) {
 			global $wgUser, $wgWikilogSignAndPublishDefault;
 			$fields = array();
