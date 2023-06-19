@@ -158,7 +158,6 @@ class WikilogUtils {
 	public static function parsedArticle( Title $title, $feed = false ) {
 		global $wgWikilogCloneParser;
 		global $wgUser, $wgEnableParserCache;
-		global $wgParserConf;
 
 		static $parser = null;
 
@@ -206,8 +205,8 @@ class WikilogUtils {
 			if ( $wgWikilogCloneParser ) {
 				$parser = clone $globalParser;
 			} else {
-				$class = $wgParserConf['class'];
-				$parser = new $class( $wgParserConf );
+				$parserFactory = MediaWikiServices::getInstance()->getParserFactory();
+				$parser = $parserFactory->create();
 			}
 		}
 		$parser->startExternalParse( $title, $parserOpt, Parser::OT_HTML );
