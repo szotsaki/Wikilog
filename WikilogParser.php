@@ -382,7 +382,7 @@ class WikilogParser
 	 * The proper way to use this function is:
 	 * @code
 	 *   $saveFeedParse = WikilogParser::enableFeedParsing();
-	 *   # ...code that uses $wgParser in order to parse articles...
+	 *   # ...code that uses MediaWikiServices::getInstance()->getParser() in order to parse articles...
 	 *   WikilogParser::enableFeedParsing( $saveFeedParse );
 	 * @endcode
 	 *
@@ -411,7 +411,7 @@ class WikilogParser
 	 * The proper way to use this function is:
 	 * @code
 	 *   $saveExpUrls = WikilogParser::expandLocalUrls();
-	 *   # ...code that uses $wgParser in order to parse articles...
+	 *   # ...code that uses MediaWikiServices::getInstance()->getParser() in order to parse articles...
 	 *   WikilogParser::expandLocalUrls( $saveExpUrls );
 	 * @endcode
 	 *

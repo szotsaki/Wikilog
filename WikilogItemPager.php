@@ -26,6 +26,8 @@
  * @author Juliano F. Ravasi < dev juliano info >
  */
 
+use MediaWiki\MediaWikiServices;
+
 if ( !defined( 'MEDIAWIKI' ) )
 	die();
 
@@ -95,14 +97,15 @@ class WikilogSummaryPager
 		}
 
 		# Check parser state, setup edit links.
-		global $wgOut, $wgParser, $wgTitle;
+		global $wgOut, $wgTitle;
+		$parser = MediaWikiServices::getInstance()->getParser();
 		if ( $this->mIncluding ) {
-			$popt = $wgParser->getOptions();
+			$popt = $parser->getOptions();
 		} else {
 			$popt = $wgOut->parserOptions();
 
-		# We will need a clean parser if not including.
-			$wgParser->startExternalParse( $wgTitle, $popt, Parser::OT_HTML );
+			# We will need a clean parser if not including.
+			$parser->startExternalParse( $wgTitle, $popt, Parser::OT_HTML );
 		}
 		$this->mShowEditLink = $popt->getEditSection();
 	}
@@ -239,7 +242,7 @@ class WikilogSummaryPager
 
 	/**
 	 * Parse a given wikitext and returns the resulting HTML fragment.
-	 * Uses either $wgParser->recursiveTagParse() or $wgParser->parse()
+	 * Uses either $parser->recursiveTagParse() or $parser->parse()
 	 * depending whether the content is being included in another
 	 * article. Note that the parser state can't be reset, or it will
 	 * break the parser output.
@@ -247,12 +250,13 @@ class WikilogSummaryPager
 	 * @return Resulting HTML fragment.
 	 */
 	protected function parse( $text ) {
-		global $wgTitle, $wgParser, $wgOut;
+		global $wgTitle, $wgOut;
+		$parser = MediaWikiServices::getInstance()->getParser();
 		if ( $this->mIncluding ) {
-			return $wgParser->recursiveTagParse( $text ) . "\n";
+			return $parser->recursiveTagParse( $text ) . "\n";
 		} else {
 			$popts = $wgOut->parserOptions();
-			$output = $wgParser->parse( $text, $wgTitle, $popts, true, false );
+			$output = $parser->parse( $text, $wgTitle, $popts, true, false );
 			return $output->getText();
 		}
 	}
@@ -318,17 +322,18 @@ class WikilogTemplatePager
 	 * Constructor.
 	 */
 	function __construct( WikilogItemQuery $query, Title $template, $limit = false, $including = false ) {
-		global $wgParser, $wgUser;
+		global $wgUser;
+		$parser = MediaWikiServices::getInstance()->getParser();
 
 		# Parent constructor.
 		parent::__construct( $query, $limit, $including );
 
 		# Load template
-		if ( !$wgParser->mOptions ) {
-			$wgParser->parse( '', $template, ParserOptions::newFromUser( $wgUser ) );
+		if ( !$parser->mOptions ) {
+			$parser->parse( '', $template, ParserOptions::newFromUser( $wgUser ) );
 		}
 		list( $this->mTemplate, $this->mTemplateTitle ) =
-			$wgParser->getTemplateDom( $template );
+			$parser->getTemplateDom( $template );
 		if ( $this->mTemplate === false ) {
 			$this->mTemplate = "[[:$template]]";
 		}
@@ -349,7 +354,7 @@ class WikilogTemplatePager
 	}
 
 	function formatRow( $row ) {
-		global $wgParser, $wgLang;
+		global $wgLang;
 		global $wgWikilogPagerDateFormat;
 
 		# Retrieve article parser output and other data.
@@ -389,6 +394,7 @@ class WikilogTemplatePager
 		}
 
 		# Template parameters.
+		$parser = MediaWikiServices::getInstance()->getParser();
 		$vars = array(
 			'class'         => $divclass,
 			'wikilogTitle'  => $item->mParentName,
@@ -407,13 +413,13 @@ class WikilogTemplatePager
 			'updatedTime'   => $updatedTime,
 			'talkUpdatedDate' => $talkUpdatedDate,
 			'talkUpdatedTime' => $talkUpdatedTime,
-			'summary'       => $wgParser->insertStripItem( $summary ),
+			'summary'       => $parser->insertStripItem( $summary ),
 			'hasMore'       => $hasMore ? '*' : '',
 			'comments'      => $comments,
 			'ncomments'     => $nc,
 		);
 
-		$frame = $wgParser->getPreprocessor()->newCustomFrame( $vars );
+		$frame = $parser->getPreprocessor()->newCustomFrame( $vars );
 		$text = $frame->expand( $this->mTemplate );
 
 		return $this->parse( $text );

@@ -26,6 +26,8 @@
  * @author Juliano F. Ravasi < dev juliano info >
  */
 
+use MediaWiki\MediaWikiServices;
+
 if ( !defined( 'MEDIAWIKI' ) )
 	die();
 
@@ -156,7 +158,7 @@ class WikilogUtils {
 	public static function parsedArticle( Title $title, $feed = false ) {
 		global $wgWikilogCloneParser;
 		global $wgUser, $wgEnableParserCache;
-		global $wgParser, $wgParserConf;
+		global $wgParserConf;
 
 		static $parser = null;
 
@@ -197,11 +199,12 @@ class WikilogUtils {
 
 		# Get a parser instance, if not already cached.
 		if ( is_null( $parser ) ) {
-			if ( !StubObject::isRealObject( $wgParser ) ) {
-				$wgParser->_unstub();
+			$globalParser = MediaWikiServices::getInstance()->getParser();
+			if ( !StubObject::isRealObject( $globalParser ) ) {
+				$globalParser->_unstub();
 			}
 			if ( $wgWikilogCloneParser ) {
-				$parser = clone $wgParser;
+				$parser = clone $globalParser;
 			} else {
 				$class = $wgParserConf['class'];
 				$parser = new $class( $wgParserConf );
@@ -244,12 +247,11 @@ class WikilogUtils {
 	 *   the global one.
 	 */
 	private static function parserSanityCheck( $newparser ) {
-		global $wgParser;
-
 		$newparser->firstCallInit();
 
-		$th_diff = array_diff_key( $wgParser->getTags(), $newparser->getTags() );
-		$fh_diff = array_diff_key( $wgParser->getFunctionHooks(), $newparser->getFunctionHooks() );
+		$parser = MediaWikiServices::getInstance()->getParser();
+		$th_diff = array_diff_key( $parser->getTags(), $newparser->getTags() );
+		$fh_diff = array_diff_key( $parser->getFunctionHooks(), $newparser->getFunctionHooks() );
 
 		if ( !empty( $th_diff ) || !empty( $fh_diff ) ) {
 			wfDebug( "*** Wikilog WARNING: Detected broken extensions installed. "

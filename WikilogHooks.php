@@ -254,16 +254,16 @@ class WikilogHooks
 		if ( isset( $wikiPage->mExtWikilog ) && $wikiPage->mExtWikilog['signpub'] ) {
 			$text = rtrim( $text ) . "\n{{wl-publish: $txtDate | $txtUser }}\n";
 		} elseif ( Wikilog::getWikilogInfo( $wikiPage->getTitle() ) ) {
-			global $wgParser;
+			$parser = MediaWikiServices::getInstance()->getParser();
 			$sigs = array(
 				'/\n?(--)?~~~~~\n?/m' => "\n{{wl-publish: $txtDate }}\n",
 				'/\n?(--)?~~~~\n?/m' => "\n{{wl-publish: $txtDate | $txtUser }}\n",
 				'/\n?(--)?~~~\n?/m' => "\n{{wl-author: $txtUser }}\n"
 			);
-			$wgParser->startExternalParse( $wikiPage->getTitle(), ParserOptions::newFromUser( $user ), Parser::OT_WIKI );
-			$text = $wgParser->replaceVariables( $text );
+			$parser->startExternalParse( $wikiPage->getTitle(), ParserOptions::newFromUser( $user ), Parser::OT_WIKI );
+			$text = $parser->replaceVariables( $text );
 			$text = preg_replace( array_keys( $sigs ), array_values( $sigs ), $text );
-			$text = $wgParser->mStripState->unstripBoth( $text );
+			$text = $parser->mStripState->unstripBoth( $text );
 		}
 		$content = new WikitextContent( $text );
 		return true;

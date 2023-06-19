@@ -26,6 +26,8 @@
  * @author Juliano F. Ravasi < dev juliano info >
  */
 
+use MediaWiki\MediaWikiServices;
+
 if ( !defined( 'MEDIAWIKI' ) )
 	die();
 
@@ -144,7 +146,7 @@ class SpecialWikilog
 	 * @param $opts Form options, such as wikilog name, category, date, etc.
 	 */
 	public function webOutput( FormOptions $opts ) {
-		global $wgRequest, $wgOut, $wgMimeType, $wgTitle, $wgParser, $wgUser;
+		global $wgRequest, $wgOut, $wgMimeType, $wgTitle, $wgUser;
 
 		# Set page title, html title, nofollow, noindex, etc...
 		$this->setHeaders();
@@ -158,7 +160,8 @@ class SpecialWikilog
 		# object is created. WikilogTemplatePager fails otherwise.
 		if ( !$this->including() ) {
 			$popts = $wgOut->parserOptions();
-			$wgParser->startExternalParse( $wgTitle, $popts, Parser::OT_HTML );
+			$parser = MediaWikiServices::getInstance()->getParser();
+			$parser->startExternalParse( $wgTitle, $popts, Parser::OT_HTML );
 		}
 
 		# Create the pager object that will create the list of articles.

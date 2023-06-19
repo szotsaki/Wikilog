@@ -63,7 +63,7 @@ abstract class WikilogCommentPager
 	function __construct( WikilogCommentQuery $query, $formatter = null,
 			$including = false )
 	{
-		global $wgUser, $wgParser;
+		global $wgUser;
 		global $wgWikilogNumComments, $wgWikilogExpensiveLimit;
 
 		# WikilogCommentQuery object drives our queries.
