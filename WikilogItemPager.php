@@ -63,7 +63,6 @@ class WikilogSummaryPager
 	public $mQuery = null;			///< Wikilog item query data
 	public $mIncluding = false;		///< If pager is being included
 	public $noActions = false;		///< Hide "Actions" column, used in SpecialWikilog.php
-	public $mShowEditLink = false;	///< If edit links are shown.
 
 	/**
 	 * Constructor.
@@ -97,17 +96,14 @@ class WikilogSummaryPager
 		}
 
 		# Check parser state, setup edit links.
-		global $wgOut, $wgTitle;
-		$parser = MediaWikiServices::getInstance()->getParser();
-		if ( $this->mIncluding ) {
-			$popt = $parser->getOptions();
-		} else {
+		if (! $this->mIncluding ) {
+			global $wgOut, $wgTitle;
+			$parser = MediaWikiServices::getInstance()->getParser();
 			$popt = $wgOut->parserOptions();
 
 			# We will need a clean parser if not including.
 			$parser->startExternalParse( $wgTitle, $popt, Parser::OT_HTML );
 		}
-		$this->mShowEditLink = $popt->getEditSection();
 	}
 
 	/**
@@ -195,7 +191,7 @@ class WikilogSummaryPager
 		$heading = Linker::link( $item->mTitle, $titleText, array(), array(),
 			array( 'known', 'noclasses' )
 		);
-		if ( $this->mShowEditLink && $item->mTitle->quickUserCan( 'edit' ) ) {
+		if ( $item->mTitle->quickUserCan( 'edit' ) ) {
 			$heading = $this->doEditLink( $item->mTitle, $item->mName ) . $heading;
 		}
 		$heading = Xml::tags( 'h2', null, $heading );
