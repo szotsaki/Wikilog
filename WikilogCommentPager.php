@@ -288,7 +288,7 @@ class WikilogCommentThreadPager
 			foreach ( $this->mRows as $i => $row ) {
 				$comments[$i] = WikilogComment::newFromRow( $row, $subject );
 			}
-			wfRunHooks( 'WikilogPreloadComments', array( $this, &$comments ) );
+			Hooks::run( 'WikilogPreloadComments', array( $this, &$comments ) );
 
 			$level = $this->mRootLevel;
 			foreach ( $comments as $num => $comment ) {

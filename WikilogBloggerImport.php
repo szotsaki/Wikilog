@@ -146,7 +146,7 @@ class WikilogBloggerImport
             $revId = $revision->insertOn($dbw);
             $changed = $article->updateIfNewerOn($dbw, $revision);
             /* Run ArticleSaveComplete hook */
-            wfRunHooks('ArticleSaveComplete', array(&$article, &$user, &$page['text'], &$summary,
+            Hooks::run('ArticleSaveComplete', array(&$article, &$user, &$page['text'], &$summary,
                 0, NULL, NULL, &$flags, &$revision, &$status));
             /* Run ArticleEditUpdates hooks */
             $article->mPreparedEdit = $article->prepareTextForEdit($page['text'], $revId);

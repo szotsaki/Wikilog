@@ -1137,7 +1137,7 @@ class WikilogCommentFormatter
 					'known'
 				);
 			}
-			wfRunHooks( 'WikilogCommentToolLinks', array( $this, $comment, &$tools ) );
+			Hooks::run( 'WikilogCommentToolLinks', array( $this, $comment, &$tools ) );
 		}
 
 		if ( $tools ) {

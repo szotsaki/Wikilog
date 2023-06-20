@@ -280,7 +280,7 @@ class WikilogSummaryPager
 		$result = wfMessage( 'editsection-brackets', $link )->escaped();
 		$result = "<span class=\"editsection\">$result</span>";
 
-		wfRunHooks( 'DoEditSectionLink', array( $skin, $title, "", $tooltip, &$result ) );
+		Hooks::run( 'DoEditSectionLink', array( $skin, $title, "", $tooltip, &$result ) );
 		return $result;
 	}
 }
