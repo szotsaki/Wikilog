@@ -289,7 +289,8 @@ END_STRING;
 
         $prefix = '';
         if ( $subscribed === null ) {
-            $subscribed = $wgUser->isWatched( $title );
+            $watchlistManager = MediaWikiServices::getInstance()->getWatchlistManager();
+            $subscribed = $watchlistManager->isWatched( $wgUser, $title );
         }
 
         $query = array(
