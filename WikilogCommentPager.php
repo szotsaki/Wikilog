@@ -63,7 +63,6 @@ abstract class WikilogCommentPager
 	function __construct( WikilogCommentQuery $query, $formatter = null,
 			$including = false )
 	{
-		global $wgUser;
 		global $wgWikilogNumComments, $wgWikilogExpensiveLimit;
 
 		# WikilogCommentQuery object drives our queries.
@@ -83,7 +82,7 @@ abstract class WikilogCommentPager
 		# Fix our limits, Pager defaults are too high.
 		$this->mDefaultLimit = $wgWikilogNumComments;
 		list( $this->mLimit, /* $offset */ ) =
-			$this->mRequest->getLimitOffset( $wgWikilogNumComments, '' );
+			$this->mRequest->getLimitOffsetForUser( $this->getSkin()->getUser(), $wgWikilogNumComments, '' );
 
 		# This is too expensive, limit listing.
 		if ( $this->mLimit > $wgWikilogExpensiveLimit ) {

@@ -113,14 +113,15 @@ class WikilogCalendar
     /* Make HTML code for calendar for the given fucking query object */
     static function sidebarCalendar($pager)
     {
-        global $wgRequest, $wgWikilogNumArticles;
+        global $wgRequest, $wgWikilogNumArticles, $wgUser;
+
         $dbr = wfGetDB(DB_REPLICA);
         // Make limit and offset work, but only in the terms of
         // selecting displayed MONTHS, not DATES. I.e. if there
         // are posts selected from 2011-01-15 to 2011-02-15,
         // make calendar for full january and february months,
         // not for the first half of february and second of january
-        list($limit) = $wgRequest->getLimitOffset($wgWikilogNumArticles, '');
+        list($limit) = $wgRequest->getLimitOffsetForUser($wgUser, $wgWikilogNumArticles, '');
         $offset = $wgRequest->getVal('offset');
         $dir = $wgRequest->getVal('dir') == 'prev';
         // FIXME this is a problem: when sorted by a different field,

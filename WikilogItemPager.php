@@ -86,7 +86,7 @@ class WikilogSummaryPager
 			$this->mLimit = $limit;
 		} else {
 			list( $this->mLimit, /* $offset */ ) =
-				$this->mRequest->getLimitOffset( $wgWikilogNumArticles, '' );
+				$this->mRequest->getLimitOffsetForUser( $wgUser, $wgWikilogNumArticles, '' );
 		}
 
 		# This is too expensive, limit listing.
