@@ -142,7 +142,7 @@ class WikilogMainPage
 	 * Wikilog action handler.
 	 */
 	public function wikilog() {
-		global $wgUser, $wgOut, $wgRequest;
+		global $wgOut, $wgRequest;
 
 		if ( $this->getTitle()->exists() && $wgRequest->getBool( 'wlActionImport' ) ) {
 			return $this->actionImport();
@@ -151,18 +151,18 @@ class WikilogMainPage
 		$wgOut->setPageTitle( wfMessage( 'wikilog-tab-title' )->text() );
 		$wgOut->setRobotpolicy( 'noindex,nofollow' );
 
+		$permissionManager = MediaWikiServices::getInstance()->getPermissionManager();
+		$skin = $this->getContext()->getSkin();
+		$user = $skin->getUser();
 		if ( $this->getTitle()->exists() ) {
-			$skin = $this->getContext()->getSkin();
 			$wgOut->addHTML( $this->formatWikilogDescription( $skin ) );
 			$wgOut->addHTML( $this->formatWikilogInformation( $skin ) );
 
-			$permissionManager = MediaWikiServices::getInstance()->getPermissionManager();
-			$user = $skin->getUser();
 			if ( $permissionManager->quickUserCan( 'edit', $user, $this->getTitle() ) ) {
 				$wgOut->addHTML( self::formNewItem( $this->getTitle() ) );
 				$wgOut->addHTML( $this->formImport() );
 			}
-		} elseif ( $this->getTitle()->userCan( 'create' ) ) {
+		} elseif ( $permissionManager->userCan( 'create', $user, $this->getTitle() ) ) {
 			$text = wfMessage( 'wikilog-missing-wikilog' )->parse();
 			$text = WikilogUtils::wrapDiv( 'noarticletext', $text );
 			$wgOut->addHTML( $text );
@@ -278,10 +278,13 @@ class WikilogMainPage
 				'page_namespace' => $wgWikilogNamespaces,
 				'page_title NOT LIKE \'%/%\'',
 			), __METHOD__ );
+
+			$permissionManager = MediaWikiServices::getInstance()->getPermissionManager();
+			$user = $this->getContext()->getSkin()->getUser();
 			$opts = array();
 			foreach ( $r as $obj ) {
 				$t = Title::newFromID( $obj->page_id );
-				if ( $t->userCan( 'edit' ) ) {
+				if ( $permissionManager->userCan( 'edit', $user, $t ) ) {
 					$opts[] = $t;
 				}
 			}
