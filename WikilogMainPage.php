@@ -26,6 +26,8 @@
  * @author Juliano F. Ravasi < dev juliano info >
  */
 
+use MediaWiki\MediaWikiServices;
+
 if ( !defined( 'MEDIAWIKI' ) )
 	die();
 
@@ -153,7 +155,10 @@ class WikilogMainPage
 			$skin = $this->getContext()->getSkin();
 			$wgOut->addHTML( $this->formatWikilogDescription( $skin ) );
 			$wgOut->addHTML( $this->formatWikilogInformation( $skin ) );
-			if ( $this->getTitle()->quickUserCan( 'edit' ) ) {
+
+			$permissionManager = MediaWikiServices::getInstance()->getPermissionManager();
+			$user = $skin->getUser();
+			if ( $permissionManager->quickUserCan( 'edit', $user, $this->getTitle() ) ) {
 				$wgOut->addHTML( self::formNewItem( $this->getTitle() ) );
 				$wgOut->addHTML( $this->formImport() );
 			}
@@ -348,7 +353,9 @@ class WikilogMainPage
 		global $wgOut, $wgRequest;
 		$wgOut->setPageTitle( wfMessage( 'wikilog-import' )->text() );
 
-		if ( !$this->getTitle()->quickUserCan( 'edit' ) ) {
+		$permissionManager = MediaWikiServices::getInstance()->getPermissionManager();
+		$user = $this->getContext()->getSkin()->getUser();
+		if ( !$permissionManager->quickUserCan( 'edit', $user, $this->getTitle() ) ) {
 			$wgOut->loginToUse();
 			$wgOut->output();
 			exit;

@@ -465,7 +465,9 @@ class Wikilog
 		global $wgRequest, $wgWikilogEnableComments;
 
 		$action = $wgRequest->getText( 'action' );
-		if ( $wi->isMain() && $skin->getTitle()->quickUserCan( 'edit' ) ) {
+		$permissionManager = MediaWikiServices::getInstance()->getPermissionManager();
+		$user = $skin->getUser();
+		if ( $wi->isMain() && $permissionManager->quickUserCan( 'edit', $user, $skin->getTitle() ) ) {
 			$views['wikilog'] = array(
 				'class' => ( $action == 'wikilog' ) ? 'selected' : false,
 				'text' => wfMessage( 'wikilog-tab' )->text(),
