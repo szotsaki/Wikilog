@@ -48,6 +48,9 @@ class SpecialWikilog
 	/** Statuses. */
 	protected static $statuses = array( 'all', 'published', 'drafts' );
 
+	/** Query. */
+	protected $query;
+
 	/**
 	 * Constructor.
 	 */

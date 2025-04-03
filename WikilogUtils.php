@@ -370,9 +370,10 @@ class WikilogUtils {
 
 		$content = Sanitizer::removeHTMLcomments( $parserOutput->getText() );
 
-		if ( isset( $parserOutput->mExtWikilog ) && $parserOutput->mExtWikilog->mSummary ) {
+		$extWikilog = $parserOutput->getExtensionData( "mExtWikilog" );
+		if ( $extWikilog && $extWikilog->mSummary ) {
 			# Parser output contains wikilog output and summary, use it.
-			$summary = Sanitizer::removeHTMLcomments( $parserOutput->mExtWikilog->mSummary );
+			$summary = Sanitizer::removeHTMLcomments( $extWikilog->mSummary );
 		} else {
 			# Use DOM to extract summary from the content text.
 			try {

@@ -122,7 +122,7 @@ class WikilogParser
 	 * ParserAfterTidy hook handler function.
 	 */
 	public static function AfterTidy( $parser, $text ) {
-		$parser->getOutput()->mExtWikilog = $parser->mExtWikilog;
+		$parser->getOutput()->setExtensionData( "mExtWikilog", $parser->mExtWikilog );
 		return true;
 	}
 

@@ -157,9 +157,9 @@ class WikilogLinksUpdate
 	 *  MediaWiki hooks.
 	 */
 	static function LinksUpdate( $lupd ) {
-		if ( isset( $lupd->mParserOutput->mExtWikilog ) &&
-			 Wikilog::getWikilogInfo( $lupd->getTitle() ) ) {
-			$u = new WikilogLinksUpdate( $lupd, $lupd->mParserOutput->mExtWikilog );
+		$extWikilog = $lupd->getParserOutput()->getExtensionData( "mExtWikilog" );
+		if ( $extWikilog && Wikilog::getWikilogInfo( $lupd->getTitle() ) ) {
+			$u = new WikilogLinksUpdate( $lupd, $extWikilog );
 			$u->doUpdate();
 		}
 		return true;
