@@ -153,7 +153,7 @@ $wgHooks['BeforePageDisplay'][] = 'Wikilog::BeforePageDisplay';
 $wgHooks['TitleIsAlwaysKnown'][] = 'Wikilog::TitleIsAlwaysKnown';
 $wgHooks['SkinTemplateTabAction'][] = 'Wikilog::SkinTemplateTabAction';
 $wgHooks['SkinTemplateTabs'][] = 'Wikilog::SkinTemplateTabs';
-$wgHooks['SkinTemplateNavigation'][] = 'Wikilog::SkinTemplateNavigation';
+$wgHooks['SkinTemplateNavigation::Universal'][] = 'Wikilog::SkinTemplateNavigation';
 $wgHooks['GetPreferences'][] = 'Wikilog::getPreferences';
 
 // Calendar
